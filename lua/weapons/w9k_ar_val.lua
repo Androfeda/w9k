@@ -26,17 +26,17 @@ SWEP.ShootAmbExt						= "w9k/fesiug/distant_rifle.ogg"
 
 -- Recoil
 SWEP.RecoilUp							= 1 -- degrees punched
-SWEP.RecoilUpDrift						= 0.5 -- 50% will be smoothed
-SWEP.RecoilUpDecay						= 10 -- 10 degrees per second
+SWEP.RecoilUpDrift						= 0.5 -- how much will be smooth recoil
+SWEP.RecoilUpDecay						= 10 -- how much recoil to remove per second
 SWEP.RecoilSide							= 2 -- degrees punched, in either direction (-100% to 100%)
-SWEP.RecoilSideDrift					= 0.5 -- 50% will be smoothed
-SWEP.RecoilSideDecay					= 10 -- 10 degrees per second
-SWEP.RecoilFlipChance					= ( 1 / 7 ) -- 1 in 7 chance for recoil flip
+SWEP.RecoilSideDrift					= 0.5 -- how much will be smooth recoil
+SWEP.RecoilSideDecay					= 10 -- how much recoil to remove per second
+SWEP.RecoilFlipChance					= ( 1 / 7 ) -- chance to flip recoil direction
 SWEP.RecoilADSMult						= ( 1 / 3 ) -- multiply shot recoil by this amount when ads'd
 
 -- Damage
-SWEP.DamageNear							= 23
-SWEP.DamageFar							= 19
+SWEP.DamageNear							= 27
+SWEP.DamageFar							= 22
 SWEP.RangeNear							= 50
 SWEP.RangeFar							= 100
 

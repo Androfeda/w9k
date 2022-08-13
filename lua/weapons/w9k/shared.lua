@@ -29,12 +29,12 @@ SWEP.ShootAmbExt						= ")w9k/fesiug/distant_pistol.ogg"
 
 -- Recoil
 SWEP.RecoilUp							= 2 -- degrees punched
-SWEP.RecoilUpDrift						= 0.5 -- 50% will be smoothed
-SWEP.RecoilUpDecay						= 10 -- 10 degrees per second
+SWEP.RecoilUpDrift						= 0.5 -- how much will be smooth recoil
+SWEP.RecoilUpDecay						= 10 -- how much recoil to remove per second
 SWEP.RecoilSide							= 2 -- degrees punched, in either direction (-100% to 100%)
-SWEP.RecoilSideDrift					= 0.5 -- 50% will be smoothed
-SWEP.RecoilSideDecay					= 10 -- 10 degrees per second
-SWEP.RecoilFlipChance					= ( 1 / 7 ) -- 1 in 7 chance for recoil flip
+SWEP.RecoilSideDrift					= 0.5 -- how much will be smooth recoil
+SWEP.RecoilSideDecay					= 10 -- how much recoil to remove per second
+SWEP.RecoilFlipChance					= ( 1 / 7 ) -- chance to flip recoil direction
 SWEP.RecoilADSMult						= ( 1 / 3 ) -- multiply shot recoil by this amount when ads'd
 
 -- Spread
@@ -45,6 +45,7 @@ SWEP.SpreadSprint						= 5 -- spread when running
 SWEP.SpreadShot							= 0.5 -- spread per shot
 SWEP.SpreadShotDecay					= 6 -- how much to deaay per second
 SWEP.SpreadShotDelay					= 0.04 -- time before spread decays after shot
+SWEP.SpreadShotSight					= ( 2 / 3 ) -- multiply shot spread by this amount when ads'd
 
 -- Ability
 SWEP.Primary.ClipSize					= -1
@@ -246,7 +247,7 @@ function SWEP:PrimaryAttack()
 			self:SetRecoilFlip( !self:GetRecoilFlip() )
 		end
 	end
-	self:SetSpread( self:GetSpread() + self.SpreadShot )
+	self:SetSpread( self:GetSpread() + (self.SpreadShot * Lerp(self:GetSightDelta(), 1, self.SpreadShotSight ) ) )
 	self:SetSpreadDelayTime( CurTime() + self.SpreadShotDelay )
 	
 	return true
@@ -332,7 +333,7 @@ function SWEP:Deploy()
 	self:SetSprintDelta( 0 )
 	
 	lastfmswitch = CurTime()
-	if game.SinglePlayer() then
+	if SERVER then
 		self:CallOnClient("FMFix_SP")
 	end
 	return true
@@ -518,12 +519,14 @@ function SWEP:SendAnim( act, hold )
 		anim = fallback
 		anim.Source = act
 	end
+	local mult = anim.Mult or 1
 	self:SendWeaponAnim( anim.Source )
-	self:SetPlaybackRate( anim.Mult or 1 )
+	self:SetPlaybackRate( mult )
+	self:GetOwner():GetViewModel():SetPlaybackRate( mult )
 	if hold == "idle" then
 		hold = false
 	else
-		self:SetIdleIn( CurTime() + self:SequenceDuration() )
+		self:SetIdleIn( CurTime() + (self:SequenceDuration() / mult) )
 	end
 
 	local stopsight = hold
@@ -545,16 +548,16 @@ function SWEP:SendAnim( act, hold )
 	end
 
 	if reloadtime then
-		self:SetReloadingTime( CurTime() + (anim.ReloadingTime or self:SequenceDuration()) )
+		self:SetReloadingTime( CurTime() + (anim.ReloadingTime or self:SequenceDuration() / mult) )
 	end
 	if stopsight then
-		self:SetStopSightTime( CurTime() + (anim.StopSightTime or self:SequenceDuration()) )
+		self:SetStopSightTime( CurTime() + (anim.StopSightTime or self:SequenceDuration() / mult) )
 	end
 	if loadin then
-		self:SetLoadIn( CurTime() + (anim.LoadIn or self:SequenceDuration()) )
+		self:SetLoadIn( CurTime() + (anim.LoadIn or self:SequenceDuration() / mult) )
 	end
 	if suppresstime then
-		self:SetSuppressIn( CurTime() + (anim.SuppressTime or self:SequenceDuration()) )
+		self:SetSuppressIn( CurTime() + (anim.SuppressTime or self:SequenceDuration() / mult) )
 	end
 
 end
@@ -742,13 +745,16 @@ if CLIENT then
 	}
 end
 
-local CHR_F = Color( 255, 255, 100, 255 )
+local CHR_F = Color( 255, 242, 151, 255 )
 local CHR_B = Color( 0, 0, 0, 100 )
 local CHR_S = Color( 255, 255, 255, 255 )
-local len = 1.5
-local thi = 1
+local len = 1.0
+local thi = 1.0
 local gap = 10
 local sd = 1
+
+local reloadclock = 0
+
 function SWEP:DoDrawCrosshair()
 	local l = ScreenScale(len)
 	local t = ScreenScale(thi)
@@ -784,7 +790,8 @@ function SWEP:DoDrawCrosshair()
 		surface.DrawTexturedRect( ( ScrW() / 2 ) - ( size / 2 ), ( ScrH() / 2 ) - ( size / 2 ), size, size)
 	end
 
-	local clock = Lerp( math.max( self:GetSightDelta(), self:GetSprintDelta() ), 1, 0 )
+	reloadclock = math.Approach( reloadclock, (self:GetReloadingTime() > CurTime()) and 1 or 0, FrameTime() / 0.4 )
+	local clock = Lerp( math.max( self:GetSightDelta(), self:GetSprintDelta(), reloadclock ), 1, 0 )
 	CHR_F.a = clock * 255
 	CHR_B.a = clock * 100
 	gap = gap / (clock)
@@ -803,6 +810,9 @@ function SWEP:DoDrawCrosshair()
 	-- right prong
 	surface.DrawRect( math.Round(( ScrW() / 2 ) + gap + s), math.Round(( ScrH() / 2 ) - ( t / 2 ) + s), l, t )
 
+	-- center
+	surface.DrawRect( math.Round(( ScrW() / 2 ) - ( t / 2 ) + s), math.Round(( ScrH() / 2 ) - ( t / 2 ) + s), t, t )
+
 	-- fore
 	surface.SetDrawColor( CHR_F )
 	-- bottom prong
@@ -816,6 +826,9 @@ function SWEP:DoDrawCrosshair()
 
 	-- right prong
 	surface.DrawRect( math.Round(( ScrW() / 2 ) + gap), math.Round(( ScrH() / 2 ) - ( t / 2 )), l, t )
+
+	-- center
+	surface.DrawRect( math.Round(( ScrW() / 2 ) - ( t / 2 )), math.Round(( ScrH() / 2 ) - ( t / 2 )), t, t )
 	return true
 end
 

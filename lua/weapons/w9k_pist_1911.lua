@@ -27,13 +27,23 @@ SWEP.ShootAmbExt						= ")w9k/fesiug/distant_pistol.ogg"
 
 -- Recoil
 SWEP.RecoilUp							= 2 -- degrees punched
-SWEP.RecoilUpDrift						= 0.5 -- 50% will be smoothed
-SWEP.RecoilUpDecay						= 10 -- 10 degrees per second
+SWEP.RecoilUpDrift						= 0.5 -- how much will be smooth recoil
+SWEP.RecoilUpDecay						= 10 -- how much recoil to remove per second
 SWEP.RecoilSide							= 4 -- degrees punched, in either direction (-100% to 100%)
-SWEP.RecoilSideDrift					= 0.3 -- 50% will be smoothed
-SWEP.RecoilSideDecay					= 10 -- 10 degrees per second
-SWEP.RecoilFlipChance					= ( 1 / 3 ) -- 1 in 7 chance for recoil flip
+SWEP.RecoilSideDrift					= 0.3 -- how much will be smooth recoil
+SWEP.RecoilSideDecay					= 10 -- how much recoil to remove per second
+SWEP.RecoilFlipChance					= ( 1 / 3 ) -- chance to flip recoil direction
 SWEP.RecoilADSMult						= ( 1 / 3 ) -- multiply shot recoil by this amount when ads'd
+
+-- Spread
+SWEP.SpreadHip							= 1 -- spread from the hip
+SWEP.SpreadSight						= 0 -- spread in sights
+SWEP.SpreadMoving						= 2 -- spread when normal walking
+SWEP.SpreadSprint						= 5 -- spread when running
+SWEP.SpreadShot							= 0.5 -- spread per shot
+SWEP.SpreadShotDecay					= 6 -- how much to deaay per second
+SWEP.SpreadShotDelay					= 0.04 -- time before spread decays after shot
+SWEP.SpreadShotSight					= ( 2 / 3 ) -- multiply shot spread by this amount when ads'd
 
 -- Damage
 SWEP.DamageNear							= 35

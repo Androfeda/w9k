@@ -7,41 +7,42 @@ SWEP.Spawnable							= true
 --
 -- Weapon configuration
 --
-SWEP.PrintName							= "SIG P229R"
+SWEP.PrintName							= "H&K HK45C"
 SWEP.Slot								= 1
 
 --
 -- Appearance
 --
-SWEP.ViewModel				= "models/weapons/v_sick_p228.mdl"
+SWEP.ViewModel				= "models/weapons/v_pist_hk45.mdl"--"models/w9k/hk45c/viewmodel.mdl"
 SWEP.WorldModel				= "models/weapons/w_sig_229r.mdl"
 SWEP.ViewModelFOVBase		= 64
+SWEP.UseHands				= false--true
 
 -- Sound
-SWEP.ShootSound							= ")weapons/sig_p228/p228-1.wav"
+SWEP.ShootSound							= ")w9k/weapons/hk45c/fire.wav"
 SWEP.ShootSound_Level					= 80
 SWEP.ShootAmb_Level						= 160
 SWEP.ShootAmbInt						= "weapons/pistol/pistol_fire3.wav"
 SWEP.ShootAmbExt						= ")w9k/fesiug/distant_pistol.ogg"
 
 -- Recoil
-SWEP.RecoilUp							= 1.5 -- degrees punched
+SWEP.RecoilUp							= 2 -- degrees punched
 SWEP.RecoilUpDrift						= 0.5 -- how much will be smooth recoil
 SWEP.RecoilUpDecay						= 10 -- how much recoil to remove per second
-SWEP.RecoilSide							= 2 -- degrees punched, in either direction (-100% to 100%)
+SWEP.RecoilSide							= 4 -- degrees punched, in either direction (-100% to 100%)
 SWEP.RecoilSideDrift					= 0.5 -- how much will be smooth recoil
 SWEP.RecoilSideDecay					= 10 -- how much recoil to remove per second
 SWEP.RecoilFlipChance					= ( 1 / 3 ) -- chance to flip recoil direction
 SWEP.RecoilADSMult						= ( 1 / 3 ) -- multiply shot recoil by this amount when ads'd
 
 -- Damage
-SWEP.DamageNear							= 30
-SWEP.DamageFar							= 20
+SWEP.DamageNear							= 35
+SWEP.DamageFar							= 25
 SWEP.RangeNear							= 15
 SWEP.RangeFar							= 30
 
 -- Ability
-SWEP.Primary.ClipSize					= 12
+SWEP.Primary.ClipSize					= 8
 SWEP.Primary.Ammo						= "pistol"
 SWEP.Firemodes = {
 	{
@@ -51,9 +52,12 @@ SWEP.Firemodes = {
 	}
 }
 
+
+
+
 SWEP.IronSights = {
-	Pos = Vector(-2.653, -0.686, 1.06),
-	Ang = Angle(0.3, 0, 0),
+	Pos = Vector(-2.32, 0, 0.86),
+	Ang = Angle(0, 0, 0),
 	Mag = 1.1,
 }
 
@@ -82,8 +86,8 @@ SWEP.Animations = {
 	},
 	["reload"] = {
 		Source = ACT_VM_RELOAD,
-		Mult = 1,
-		StopSightTime = 2.3,
-		LoadIn = 1.9,
+		Mult = 1.3,
+		StopSightTime = 2.6,
+		LoadIn = 1.7,
 	},
 }
