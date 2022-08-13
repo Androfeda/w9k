@@ -103,6 +103,7 @@ function SWEP:SetupDataTables()
 	self:NetworkVar("Bool", 1, "FiremodeDebounce")
 	self:NetworkVar("Bool", 2, "RecoilFlip")
 	self:NetworkVar("Bool", 3, "Suppressed")
+	self:NetworkVar("Bool", 4, "UserSight")
 
 	self:NetworkVar("Int", 0, "BurstCount")
 	self:NetworkVar("Int", 1, "Firemode")
@@ -333,7 +334,7 @@ function SWEP:Deploy()
 	self:SetSprintDelta( 0 )
 	
 	lastfmswitch = CurTime()
-	if SERVER then
+	if game.SinglePlayer() or SERVER then
 		self:CallOnClient("FMFix_SP")
 	end
 	return true
@@ -435,8 +436,17 @@ end
 
 -- Thinking
 function SWEP:Think()
+	if self:GetOwner():GetInfoNum("w9k_cl_toggleads", 0) == 0 then
+		self:SetUserSight( self:GetOwner():KeyDown(IN_ATTACK2) )
+	else
+		if self:GetReloadingTime() > CurTime() or self:GetSprintDelta() > 0 then
+			self:SetUserSight( false )
+		elseif self:GetOwner():KeyPressed(IN_ATTACK2) then
+			self:SetUserSight( !self:GetUserSight() )
+		end
+	end
 	local capableofads = self:GetStopSightTime() <= CurTime() and !self:GetOwner():IsSprinting() -- replace with GetReloading
-	self:SetSightDelta( math.Approach( self:GetSightDelta(), (capableofads and self:GetOwner():KeyDown(IN_ATTACK2) and 1 or 0), FrameTime() / 0.4 ) )
+	self:SetSightDelta( math.Approach( self:GetSightDelta(), (capableofads and self:GetUserSight() and 1 or 0), FrameTime() / 0.4 ) )
 	self:SetSprintDelta( math.Approach( self:GetSprintDelta(), (self:GetOwner():IsSprinting() and 1 or 0), FrameTime() / 0.4 ) )
 
 	if self:GetLoadIn() > 0 and self:GetLoadIn() <= CurTime() then

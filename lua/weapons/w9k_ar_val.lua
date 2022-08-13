@@ -43,7 +43,6 @@ SWEP.RangeFar							= 100
 -- Ability
 SWEP.Primary.ClipSize					= 20
 SWEP.Primary.Ammo						= "ar2"
-SWEP.IsSuppressable						= true
 SWEP.Firemodes = {
 	{
 		Count = math.huge,

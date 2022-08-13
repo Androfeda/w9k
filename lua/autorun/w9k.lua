@@ -43,3 +43,20 @@ W9K.LimbCompensation = {
 W9K.BodyDamageMults = {
 	[HITGROUP_HEAD] = 2,
 }
+
+if CLIENT then
+	CreateClientConVar("w9k_cl_toggleads", 0, true, true, nil, 0, 1)
+	hook.Add("PopulateToolMenu", "W9K_MenuOptions", function()
+		spawnmenu.AddToolMenuOption("Options", "W9K", "W9K", "Client", "", "", function(panel)
+			panel:AddControl("header", {
+				description = "Clientside options for W9K"
+			})
+
+			panel:AddControl("checkbox", {
+				label = "Toggle Aim",
+				command = "w9k_cl_toggleads"
+			})
+			panel:ControlHelp("Tap once to aim down sights")
+		end)
+	end)
+end
