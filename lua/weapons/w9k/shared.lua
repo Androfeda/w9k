@@ -674,6 +674,12 @@ function SWEP:GetViewModelPosition(pos, ang)
 
 		opos:Add( b_pos )
 		oang:Add( b_ang )
+
+		local b_pos, b_ang = Vector(), Angle()
+		b_pos.z = math.pow( math.sin( CurTime() * 2 ), 2 ) * si * -1
+
+		opos:Add( b_pos )
+		oang:Add( b_ang )
 		
 		local b_pos, b_ang = Vector(), Angle()
 		local xi = si
