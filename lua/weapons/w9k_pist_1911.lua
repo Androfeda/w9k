@@ -13,9 +13,10 @@ SWEP.Slot								= 1
 --
 -- Appearance
 --
-SWEP.ViewModel				= "models/weapons/f_dmgf_co1911.mdl"
+SWEP.ViewModel				= "models/w9k/m1911/viewmodel.mdl"
 SWEP.WorldModel				= "models/weapons/s_dmgf_co1911.mdl"
 SWEP.ViewModelFOVBase		= 74
+SWEP.UseHands				= true
 
 -- Sound
 SWEP.ShootSound							= ")weapons/dmg_colt1911/deagle-1.wav"
@@ -56,13 +57,13 @@ SWEP.Firemodes = {
 }
 
 SWEP.IronSights = {
-	Pos = Vector(-2.6004, -1.3877, 1.189),
+	Pos = Vector(-2.6004, -1.3877, 1.189) * 1.33337,
 	Ang = Angle(0.3756, -0.0032, 0.103),
 	Mag = 1.1,
 }
 
 SWEP.RunPose = {
-	Pos = Vector(3.444, -7.823, -6.27),
+	Pos = Vector(3.444, -7.823, -6.27) * 1.33337,
 	Ang = Angle(60.695, 0, 0),
 }
 
