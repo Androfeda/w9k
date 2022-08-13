@@ -37,24 +37,6 @@ SWEP.RecoilSideDecay					= 10 -- 10 degrees per second
 SWEP.RecoilFlipChance					= ( 1 / 7 ) -- 1 in 7 chance for recoil flip
 SWEP.RecoilADSMult						= ( 1 / 3 ) -- multiply shot recoil by this amount when ads'd
 
---shells/smoke fx, thanks magenta i admire your work, but you are fucking crazy
-SWEP.ShellEffect = "Shell_Ejection" 
-SWEP.W9KBASE_Attach_Muzzle = "Muzzle_Effects" 
-SWEP.W9KBASE_Effect_Fire = "Weaponry_FireFX" --Weaponry_FireFX_Small, Weaponry_FireFX_Large
-SWEP.W9KBASE_Effect_Eject = "Weaponry_EjectFX" 
-SWEP.W9KBASE_Effect_FireWorld = "Weaponry_FireFX" 
-SWEP.W9KBASE_Effect_Overheat = "Weaponry_AfterSmoke_FX" 
-SWEP.W9KBASE_Effect_OverheatWorld = "Weaponry_AfterSmoke_FX"
-SWEP.W9KBASE_AutoEffects = true
-SWEP.W9KBASE_Overheat_Threshold = 4 
-SWEP.W9KBASE_Overheat_ResetSpeed = 0.4 
-SWEP.W9KBASE_Overheat_ResetSpeed = 0.4 
-SWEP.W9KBASE_Overheat_Num = 1
-SWEP.W9KBASE_Attach_Eject = "Shell_Ejection"
-SWEP.W9KBASE_BrassType = 1 --1 pistol, 2 smg, 3 rifle, 4 shotgun
-SWEP.W9KBASE_EjectAtt = 1 --where to eject from?
-SWEP.Overheat_Start = 1
-
 -- Spread
 SWEP.SpreadHip							= 1 -- spread from the hip
 SWEP.SpreadSight						= 0 -- spread in sights
@@ -166,72 +148,6 @@ function SWEP:SwitchFiremode(prev)
 	self:SetFiremode(nextfm)
 end
 
---shell shit
-
-function SWEP:WorldShellEffect( brasstype, attachnum ) 
- 
- if SERVER and brasstype then 
- net.Start("W9KBASE_WorldBrass") 
- net.WriteEntity(self) 
- net.WriteFloat(2) 
- net.WriteFloat(brasstype) 
- net.SendPVS(self.Owner:EyePos()) 
- end 
-end 
-
-function SWEP:WorldModelEffect( effect, attach ) 
- 
- if SERVER then 
- net.Start("W9KBASE_WorldEffect") 
- net.WriteEntity(self) 
- net.WriteString(effect) 
- net.WriteString(attach) 
- net.SendPVS(self.Owner:EyePos()) 
- end 
-end 
-
-function SWEP:StopWorldModelEffect( ) 
- 
- if SERVER then 
- net.Start("W9KBASE_StopWorldEffect") 
- net.WriteEntity(self) net.Broadcast() 
- end 
-end 
-
-function SWEP:DoBrassEffect( brasstype, attach ) 
-
- if SERVER then 
- net.Start("W9KBASE_Brass") 
- net.WriteEntity(self) 
- net.WriteFloat(attach) 
- net.WriteFloat(brasstype) 
- net.Send(self.Owner) 
- self:WorldShellEffect( brasstype, attach ) 
- end 
-end 
-
-function SWEP:SmokeyEffect() 
- 
- if SERVER then 
- local CT = CurTime() 
- local SPEED = self.W9KBASE_Overheat_ResetSpeed 
- local THRESHOLD = self.W9KBASE_Overheat_Threshold 
- local EFFECT = self.W9KBASE_Effect_Overheat 
- local EFFECTWORLD = self.W9KBASE_Effect_OverheatWorld 
- local Attz = self.W9KBASE_Attach_Muzzle 
- 
- if self.Overheat_Start and CT >= self.Overheat_Start and self.W9KBASE_Overheat_Num >= THRESHOLD then 
- self.Overheat_Start = nil 
- self:WorldModelEffect( EFFECTWORLD, Attz ) 
- net.Start("W9KBASE_WeaponEffect") 
- net.WriteEntity(self) 
- net.WriteString(EFFECT) 
- net.WriteString(Attz) 
- net.Send(self.Owner) 
- end 
- end 
-end 
-
 function SWEP:GetFiremodeName(cust)
 	local firemodename
 	local cnt = self:GetFiremodeTable(cust).Count
@@ -304,30 +220,6 @@ function SWEP:PrimaryAttack()
 		DamageFar = self.DamageFar,
 	}
 	self:FireBullet(bullet)
-	--fuck you magenta
-	local Fire_Effect = self.W9KBASE_Effect_Fire 
-	local Fire_Effect_World = self.W9KBASE_Effect_FireWorld 
-	local Eject_Effect = self.W9KBASE_Effect_Eject 
-	local Eject_Num = self.W9KBASE_EjectAtt
-	local Attz = self.W9KBASE_Attach_Muzzle 
-	local Attz2 = self.W9KBASE_Attach_Eject 
-	local BType = self.W9KBASE_BrassType 	
-	local PEffects = self.W9KBASE_AutoEffects 
-	self:WorldModelEffect( Fire_Effect_World, Attz )
-	if self.W9KBASE_BrassType then 
-		self:WorldShellEffect( self.W9KBASE_BrassType, 2 ) 
-	end 
-	
-	if game.SinglePlayer() and SERVER and PEffects then 
-	timer.Simple(0.01,function() if IsValid(self) then net.Start("W9KBASE_WeaponEffect") net.WriteEntity(self) net.WriteString(Fire_Effect) net.WriteString(Attz) net.Broadcast() if not self.StopEjectEffects then net.Start("W9KBASE_WeaponEffect") net.WriteEntity(self) net.WriteString(Eject_Effect) net.WriteString(Attz2) net.Broadcast() end net.Start("W9KBASE_BulletTracer") net.WriteEntity(self) net.WriteString(Attz) net.Broadcast() if BType then net.Start("W9KBASE_Brass") net.WriteEntity(self) net.WriteFloat(Eject_Num) net.WriteFloat(BType) net.Send(self.Owner) end end end)
-	
-	elseif not game.SinglePlayer() and CLIENT then 
-	if not IsFirstTimePredicted() then 
-	return 
-	end 
- 
-	timer.Simple(0.01,function() if IsValid(self) and PEffects then W9KBASEWeaponEffect2(self,Fire_Effect,Attz) if not self.StopEjectEffects then W9KBASEWeaponEffect2(self,Eject_Effect,Attz2) end if BType then W9KBASEBrass2( self, Eject_Num, BType ) end end end)
-	end 
 
 	if game.SinglePlayer() then
 		self:CallOnClient("PrimaryAttack_SP")

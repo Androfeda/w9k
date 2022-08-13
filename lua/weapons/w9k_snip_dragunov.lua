@@ -40,10 +40,6 @@ SWEP.DamageFar							= 90
 SWEP.RangeNear							= 60
 SWEP.RangeFar							= 120
 
--- Shells
-SWEP.W9KBASE_BrassType = 3
-SWEP.W9KBASE_EjectAtt = 2
-
 -- Ability
 SWEP.Primary.ClipSize					= 10
 SWEP.Primary.Ammo						= "ar2"
